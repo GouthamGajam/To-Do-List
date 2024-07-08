@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ Name: name, Task: task })
             });
             const newTask = await response.json();
-            addTaskToDOM(newTask.taskk); // Adjust response as per your API
+            addTaskToDOM(newTask.taskk); 
         } catch (error) {
             console.error('Error adding task:', error);
         }
