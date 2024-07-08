@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchTasks = async () => {
         try {
-            const response = await fetch('/task'); // Adjust the route as needed
+            const response = await fetch('/task');
             const tasks = await response.json();
             todoList.innerHTML = '';
             tasks.forEach(task => {
