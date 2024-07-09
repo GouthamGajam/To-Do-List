@@ -1,29 +1,54 @@
-import express from "express";
-import config from "config";
-import "./utils/dbconnect.js"; 
-import router from "./controllers/to.js"; 
-
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const app = express();
-const PORT = config.get("PORT");
+const config = require('config');
 
-app.use(express.json());
+app.use(bodyParser.json());
+app.use(express.static('public'));
 
-app.get("/", (req, res) => {
-    try {
-        res.status(200).json({ message: "Hello connected" });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: "not connected" });
-    }
+// Connect to MongoDB
+mongoose.connect(config.get("DBurl"))
+
+// Define a schema and model for todo items
+const todoSchema = new mongoose.Schema({
+    text: String,
+    completed: Boolean
 });
 
-app.use("/task", router);
+const Todo = mongoose.model('Todo', todoSchema);
 
-//  invalid paths
-app.use((req, res, next) => {
-    res.status(404).json({ message: "Wrong path" });
+// API routes
+app.get('/api/todos', async (req, res) => {
+    const todos = await Todo.find();
+    res.json(todos);
 });
 
+app.post('/api/todos', async (req, res) => {
+    const newTodo = new Todo({
+        text: req.body.text,
+        completed: false
+    });
+    await newTodo.save();
+    res.json(newTodo);
+});
+
+app.put('/api/todos/:id', async (req, res) => {
+    const updatedTodo = await Todo.findByIdAndUpdate(
+        req.params.id,
+        { text: req.body.text, completed: req.body.completed },
+        { new: true }
+    );
+    res.json(updatedTodo);
+});
+
+app.delete('/api/todos/:id', async (req, res) => {
+    await Todo.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Todo deleted' });
+});
+
+// Start the server
+const PORT = 5010;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on http://localhost:${PORT}`);
 });
