@@ -9,7 +9,7 @@ app.use(express.static('public'));
 
 // Connect to MongoDB
 mongoose.connect(config.get("DBurl"))
-
+console.log("Connected to DB server");
 // Define a schema and model for todo items
 const todoSchema = new mongoose.Schema({
     text: String,
@@ -48,7 +48,7 @@ app.delete('/api/todos/:id', async (req, res) => {
 });
 
 // Start the server
-const PORT = 5010;
+const PORT = config.get("PORT");
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
